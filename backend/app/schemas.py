@@ -70,6 +70,7 @@ class OrderItemOut(BaseModel):
 class OrderOut(BaseModel):
     id: int
     customer_id: int
+    status: str
     total_amount: float
     created_at: datetime
     items: List[OrderItemOut]

@@ -19,3 +19,7 @@ h1 { margin-bottom: 24px; color: #1a1a2e; }
 .table th { background: #1a1a2e; color: white; }
 .table button { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
 .msg { padding: 10px; margin-bottom: 16px; border-radius: 6px; background: #e8f5e9; color: #2e7d32; }
+.nav-logo { padding: 20px 16px;font-size: 16px;font-weight: 500;}
+.badge-pending { background: #fff3cd; color: #856404; }
+.badge-fulfilled { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled { background: #f8d7da; color: #842029; }

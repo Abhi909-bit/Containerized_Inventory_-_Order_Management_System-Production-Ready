@@ -35,6 +35,15 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
     for oi in order_items:
         oi.order_id = db_order.id
         db.add(oi)
+    
+    for item in order.items:
+        product = db.query(models.Product).filter(models.Product.id == item.product_id).first()
+        db.add(models.AuditLog(
+            action="STOCK_REDUCED",
+            entity_type="product",
+            entity_id=item.product_id,
+            detail=f"Stock reduced by {item.quantity} (Order #{db_order.id})"
+        ))
     db.commit()
     db.refresh(db_order)
     return db_order
@@ -57,3 +66,22 @@ def delete_order(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Order not found")
     db.delete(order)
     db.commit()
+
+
+@router.patch("/{id}/status")
+def update_order_status(id: int, status: str, db: Session = Depends(get_db)):
+    valid = ["pending", "confirmed", "fulfilled", "cancelled"]
+    if status not in valid:
+        raise HTTPException(400, f"Status must be one of: {valid}")
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(404, "Order not found")
+    
+    # Agar cancel ho to stock wapas karo
+    if status == "cancelled" and order.status != "cancelled":
+        for item in order.items:
+            item.product.quantity += item.quantity
+    
+    order.status = status
+    db.commit()
+    return order
